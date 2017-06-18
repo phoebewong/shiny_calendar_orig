@@ -40,7 +40,10 @@ shinyUI(fluidPage(
                   tabPanel("Summary", 
                            h1(textOutput("summary1")),
                            h2(textOutput("summary2")),
-                           h3(textOutput("summary3"))),
+                           h3(textOutput("summary3")),
+                           checkboxInput("sortbyFreq", "Sort by Frequency", value = TRUE),
+                           h3(textOutput("monthplotsum")),
+                           plotOutput("monthplot")),
                   
                   tabPanel("Plot: People", 
                            # Number of people to show
@@ -66,6 +69,6 @@ shinyUI(fluidPage(
       # h3("Predicted Horsepower from Model 2:"),
       # textOutput("pred2"),
       # textOutput("name")
-    )
+    )  
   )
 ))

@@ -82,13 +82,7 @@ shinyServer(function(input, output, session) {
                    start = min, end = max,
                    min = min, max = max)
   })
-  # observe({ ####
-  #   df <- display.df()
-  #   print(df)
-  #   updateDateRangeInput(session, "dateRange", label = 'Date input: yyyy-mm-dd',
-  #                        start = min(df$Start.Date, na.rm = TRUE),
-  #                        end = max(df$End.Date, na.rm = TRUE))
-  # }) ####
+
   output$table <- renderDataTable({
     #validate(need(input$meet.df != "", "Please upload a data set"))
     display.df()[, input$show_vars, drop = FALSE]
@@ -170,9 +164,40 @@ shinyServer(function(input, output, session) {
     # scale_colour_few(palette = "medium")
     print(g)
   })
-  # output$netplot <- renderPlot({
-  #   
-  # })
+  
+  output$monthplotsum <- renderText({
+    meet.df <- display.df()
+    paste("Number of Meetings I had per Month (Recommend to check 'Exclude All Day Events'")
+  })
+
+  output$monthplot <- renderPlot({
+    meet.df <- display.df()
+    ## Number of meetings per month (plot) ####
+    meet.df$startyr   <- format(meet.df$start, "%Y")
+    meet.df$startmon  <- format(meet.df$start, "%m")
+    meet.df$startyrmon <- format(meet.df$start, "%Y-%m")
+    
+    if(input$sortbyFreq == TRUE){ #sorting by Frequency
+      month.df <- as.data.frame(table(meet.df$startyrmon)) %>%
+        arrange(desc(Freq)) #sort by Frequency
+      month.df[,1] <- factor(month.df[,1])
+      month.df[,1] <- reorder(month.df[,1], -(month.df[,2]))
+    }
+    else{month.df <- as.data.frame(table(meet.df$startyrmon))}
+    
+    colnames(month.df) <- c("Month", "Freq")
+    rot = 45
+    
+    g <- ggplot(month.df, aes(x=Month, y=Freq))+
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = Freq), vjust = -0.5) +
+      xlab("Year-Month")+
+      geom_hline(yintercept=mean(month.df$Freq), col = "dark grey", linetype = "dashed")+
+      geom_text(x=Inf, y=mean(month.df$Freq), label = round(mean(month.df$Freq)), hjust=1, vjust=-0.5)+
+      theme(axis.text.x = element_text(angle = rot, hjust = 1))
+    return (g)
+  })
+  
   output$timeplot1 <- renderPlotly({
     temp <- display.df()
     temp <- subset(temp, temp$wday >= 1 & temp$wday <= 5)
@@ -331,4 +356,6 @@ shinyServer(function(input, output, session) {
     people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
     return(paste0("To be exact, ", round(people.freq.df$Freq[2]/nrow(display.df())* 100), "% of my meetings are with ", people.freq.df$all.attendee[2]))
   })
+  
+  
 })
