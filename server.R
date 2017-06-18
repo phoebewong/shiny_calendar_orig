@@ -34,29 +34,31 @@ shinyServer(function(input, output, session) {
   display.df <- reactive({
     #validate(need(input$meet.df != "", "Please upload a data set"))
     display.df <- meet.df()
+    # Changing All day event
     display.df$All.day.event <- ifelse(display.df$All.day.event == "True", TRUE, FALSE)
+    
     if(input$showallday == TRUE){
       display.df <- subset(display.df, display.df$All.day.event == FALSE & display.df$Required.Attendees != "" & display.df$Meeting.Organizer != "")
       }
     else{display.df <- display.df}
+    
+    # Cleaning date
     display.df$start <- as.POSIXct(paste(display.df$Start.Date, display.df$Start.Time), format = "%m/%d/%Y %I:%M:%S %p")
     display.df$end   <- as.POSIXct(paste(display.df$End.Date, display.df$End.Time), format = "%m/%d/%Y %I:%M:%S %p")
-    
     display.df$Start.Date <- as.Date.character(display.df$Start.Date, format = "%m/%d/%Y")
     display.df$End.Date <- as.Date.character(display.df$End.Date, format = "%m/%d/%Y")
-    
-    display.df$Required.Attendees[display.df$Required.Attendees == ""] <- NA
-    display.df$Optional.Attendees[display.df$Optional.Attendees == ""] <- NA
-    
     min.date <- input$dates[1]
     max.date <- input$dates[2]
     display.df <- subset(display.df, display.df$Start.Date >= min.date & display.df$End.Date <= max.date)
     
-    ## Cleaning Time ##
+    # Cleaning time
     display.df$duration <- as.numeric(display.df$end-display.df$start)
-    #print(display.df$hour)
     display.df$hour <- as.numeric(format(display.df$start, "%H")) # unclass((as.POSIXlt(display.df$start)))$hour
     display.df$wday <- lubridate::wday(display.df$start) - 1 # unclass((as.POSIXlt(display.df$start)))$wday #wday(display.df$start)
+    
+    display.df$Required.Attendees[display.df$Required.Attendees == ""] <- NA
+    display.df$Optional.Attendees[display.df$Optional.Attendees == ""] <- NA
+    
     return(display.df)
   })
   # Columns to show (reactive)
@@ -280,7 +282,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$summary1 <- renderText({
-    paste("From", input$dates[1], "to", input$dates[2],  "I had", nrow(display.df()), "meetings")})
+    paste("From", input$dates[1], "to", input$dates[2],  ", I had", nrow(display.df()), "meetings")})
   output$summary2 <- renderText({
     meet.df <- display.df()
     n <- input$n
@@ -303,8 +305,9 @@ shinyServer(function(input, output, session) {
     # if (sort == "Freq"){
     people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
     people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
-    return(paste("Most of them are with", people.freq.df$all.attendee[2]))
+    return(paste("Most of them are with", people.freq.df$all.attendee[2], "."))
     })
+  
   output$summary3 <- renderText({
     meet.df <- display.df()
     n <- input$n
@@ -326,6 +329,6 @@ shinyServer(function(input, output, session) {
     
     # if (sort == "Freq"){
     people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
-    return(paste("To be exact,", round(people.freq.df$Freq[2]/nrow(display.df())* 100), "% of my meetings are with", people.freq.df$all.attendee[2]))
+    return(paste0("To be exact, ", round(people.freq.df$Freq[2]/nrow(display.df())* 100), "% of my meetings are with ", people.freq.df$all.attendee[2]))
   })
 })
