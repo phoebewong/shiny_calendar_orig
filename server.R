@@ -196,22 +196,22 @@ shinyServer(function(input, output, session) {
   output$monthtimeplot <- renderPlot({
     meet.df <- display.df()
     # Duration of meetings per month (plot) ####
-    if(input$sortbyFreq == TRUE){ 
-    time.month.df <- as.data.frame(aggregate(meet.df$duration, by = list(meet.df$startyrmon), mean))
-    colnames(time.month.df) <- c("Month", "Duration")
-    } else{
+    if(input$sortbyFreq == TRUE){
     time.month.df <- as.data.frame(aggregate(meet.df$duration, by = list(meet.df$startyrmon), mean)) %>%
-        arrange(desc(X)) #sort by Frequency
+        arrange(desc(x)) #sort by Frequency
     colnames(time.month.df) <- c("Month", "Duration")
     time.month.df$Month <- factor(time.month.df$Month)
-    time.month.df$Month <- reorder(time.month.df$Month, -(time.month.df$Duration))  
+    time.month.df$Month <- reorder(time.month.df$Month, -(time.month.df$Duration))   
+    } else{
+    time.month.df <- as.data.frame(aggregate(meet.df$duration, by = list(meet.df$startyrmon), mean))
+    colnames(time.month.df) <- c("Month", "Duration") 
     }
     rot <- 45
     
     g <- ggplot(time.month.df, aes(x=Month, y=Duration)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = round(Duration)), vjust = -0.5) +
-      labs(x = "Year-Month", y = "Duration (Minutes)", title = "Average Duration (Minutes) of My Meetings") +
+      labs(x = "Year-Month", y = "Duration (Minutes)", title = "Average Duration (Minutes) Per Month") +
       geom_hline(yintercept=mean(time.month.df$Duration), col = "dark grey", linetype = "dashed")+
       geom_text(x=Inf, y=mean(time.month.df$Duration), label = round(mean(time.month.df$Duration)), hjust=1, vjust=-0.5)+
       theme(axis.text.x = element_text(angle = rot, hjust = 1))
@@ -219,6 +219,9 @@ shinyServer(function(input, output, session) {
     return(g)
   })
   
+  output$avgtimeplot <- renderPlot({
+    
+  })
   output$timeplot1 <- renderPlotly({
     temp <- display.df()
     temp <- subset(temp, temp$wday >= 1 & temp$wday <= 5)
