@@ -59,6 +59,10 @@ shinyServer(function(input, output, session) {
     display.df$Required.Attendees[display.df$Required.Attendees == ""] <- NA
     display.df$Optional.Attendees[display.df$Optional.Attendees == ""] <- NA
     
+    display.df$startyr   <- format(display.df$start, "%Y")
+    display.df$startmon  <- format(display.df$start, "%m")
+    display.df$startyrmon <- format(display.df$start, "%Y-%m")
+    
     return(display.df)
   })
   # Columns to show (reactive)
@@ -165,18 +169,9 @@ shinyServer(function(input, output, session) {
     print(g)
   })
   
-  output$monthplotsum <- renderText({
-    meet.df <- display.df()
-    paste("Number of Meetings I had per Month (Recommend to check 'Exclude All Day Events'")
-  })
-
   output$monthplot <- renderPlot({
     meet.df <- display.df()
     ## Number of meetings per month (plot) ####
-    meet.df$startyr   <- format(meet.df$start, "%Y")
-    meet.df$startmon  <- format(meet.df$start, "%m")
-    meet.df$startyrmon <- format(meet.df$start, "%Y-%m")
-    
     if(input$sortbyFreq == TRUE){ #sorting by Frequency
       month.df <- as.data.frame(table(meet.df$startyrmon)) %>%
         arrange(desc(Freq)) #sort by Frequency
@@ -191,11 +186,37 @@ shinyServer(function(input, output, session) {
     g <- ggplot(month.df, aes(x=Month, y=Freq))+
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
-      xlab("Year-Month")+
+      labs(x = "Year-Month", title = "Number of Meetings per Month") +
       geom_hline(yintercept=mean(month.df$Freq), col = "dark grey", linetype = "dashed")+
       geom_text(x=Inf, y=mean(month.df$Freq), label = round(mean(month.df$Freq)), hjust=1, vjust=-0.5)+
       theme(axis.text.x = element_text(angle = rot, hjust = 1))
     return (g)
+  })
+  
+  output$monthtimeplot <- renderPlot({
+    meet.df <- display.df()
+    # Duration of meetings per month (plot) ####
+    if(input$sortbyFreq == TRUE){ 
+    time.month.df <- as.data.frame(aggregate(meet.df$duration, by = list(meet.df$startyrmon), mean))
+    colnames(time.month.df) <- c("Month", "Duration")
+    } else{
+    time.month.df <- as.data.frame(aggregate(meet.df$duration, by = list(meet.df$startyrmon), mean)) %>%
+        arrange(desc(X)) #sort by Frequency
+    colnames(time.month.df) <- c("Month", "Duration")
+    time.month.df$Month <- factor(time.month.df$Month)
+    time.month.df$Month <- reorder(time.month.df$Month, -(time.month.df$Duration))  
+    }
+    rot <- 45
+    
+    g <- ggplot(time.month.df, aes(x=Month, y=Duration)) +
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = round(Duration)), vjust = -0.5) +
+      labs(x = "Year-Month", y = "Duration (Minutes)", title = "Average Duration (Minutes) of My Meetings") +
+      geom_hline(yintercept=mean(time.month.df$Duration), col = "dark grey", linetype = "dashed")+
+      geom_text(x=Inf, y=mean(time.month.df$Duration), label = round(mean(time.month.df$Duration)), hjust=1, vjust=-0.5)+
+      theme(axis.text.x = element_text(angle = rot, hjust = 1))
+    
+    return(g)
   })
   
   output$timeplot1 <- renderPlotly({
@@ -330,7 +351,7 @@ shinyServer(function(input, output, session) {
     # if (sort == "Freq"){
     people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
     people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
-    return(paste("Most of them are with", people.freq.df$all.attendee[2], "."))
+    return(paste0("Most of them are with ", people.freq.df$all.attendee[2], "."))
     })
   
   output$summary3 <- renderText({

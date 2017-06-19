@@ -25,10 +25,6 @@ shinyUI(fluidPage(
       
       # Date input
       uiOutput("dates"),
-      # dateRangeInput('dateRange',
-      #                 label = 'Date input: yyyy-mm-dd',
-      #                 start = Sys.Date() - 7, end = Sys.Date()),
-      # 
       checkboxInput("showallday", "Exclude All Day Events", value = TRUE)#,
       #checkboxInput("showModel2", "Show/Hide Model 2", value = TRUE)
     ),
@@ -42,8 +38,8 @@ shinyUI(fluidPage(
                            h2(textOutput("summary2")),
                            h3(textOutput("summary3")),
                            checkboxInput("sortbyFreq", "Sort by Frequency", value = TRUE),
-                           h3(textOutput("monthplotsum")),
-                           plotOutput("monthplot")),
+                           plotOutput("monthplot"),
+                           plotOutput("monthtimeplot")),
                   
                   tabPanel("Plot: People", 
                            # Number of people to show
