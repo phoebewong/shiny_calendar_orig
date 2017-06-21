@@ -103,14 +103,14 @@ shinyServer(function(input, output, session) {
   output$plot1title <- renderText({
     #validate(need(input$meet.df != "", "Please upload a data set"))
     paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2])})
-  output$plot1 <- renderPlot({
-    #validate(need(input$meet.df != "", ""))
+  
+  plot1 <- reactive({
     meet_clean.df <- display.df()
     n <- input$n
     people.freq.df <- as.data.frame(table(meet_clean.df$Meeting.Organizer)) %>%
       top_n(n, Freq) %>% #show n rows, will show >n rows if there're ties
       arrange(desc(Freq)) #%>% #show by descending order of Freq
-      # rename(Name=Var1) #-> people.freq.df
+    # rename(Name=Var1) #-> people.freq.df
     rot <- 45
     # sort <- "Freq"
     
@@ -121,13 +121,29 @@ shinyServer(function(input, output, session) {
     #   people.freq.df$Var1 <- people.freq.df$Var1
     # }
     # 
-    g <- ggplot(data=people.freq.df, aes(x=Var1, y=Freq)) +
+    ggplot(data=people.freq.df, aes(x=Var1, y=Freq)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
       xlab("Name")+
       theme(axis.text.x = element_text(angle = rot, hjust = 1))
-    print(g)
   })
+  output$plot1 <- renderPlot({
+    #validate(need(input$meet.df != "", ""))
+    return(plot1())
+  })
+  
+  output$downloadPlot1 <- downloadHandler(
+    filename = function() {
+      paste('plot', '.png', sep='')
+    },
+    content=function(file){
+      png(file)
+      print(plot1())
+      dev.off()
+    },
+    contentType='image/png')
+  
+
   output$plot2title <- renderText({
     #validate(need(input$meet.df != "", ""))
     paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2])})

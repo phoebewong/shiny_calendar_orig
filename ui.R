@@ -39,6 +39,7 @@ shinyUI(fluidPage(
                            h3(textOutput("summary3")),
                            checkboxInput("sortbyFreq", "Sort by Frequency", value = TRUE),
                            plotOutput("monthplot"),
+                           downloadButton("downloadPlot1", "Download the Plot"),
                            plotOutput("monthtimeplot")),
                   
                   tabPanel("Plot: People", 
