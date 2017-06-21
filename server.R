@@ -17,6 +17,12 @@ library(networkD3)
 # 6. Remove Appointment
 # template <- read.csv("./data/df_template.csv", header = TRUE, sep = ",", comment.char="",stringsAsFactors = FALSE)
 
+# To-do:
+# .	Exclude meeting invites from specific person (from Quant Event?)
+# .	Exclude certain events?
+# .	Add "Download Plot" buttons [ggplot]
+
+
 shinyServer(function(input, output, session) {
   #output$instruction <- renderText({return( paste("Instruction to download csv file of your calendar","http://tinnes.co.uk/desktopcalendar/support/7/faq_importexport_exportoutlook2010.php"))})
   
