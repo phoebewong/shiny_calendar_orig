@@ -39,16 +39,20 @@ shinyUI(fluidPage(
                            h3(textOutput("summary3")),
                            checkboxInput("sortbyFreq", "Sort by Frequency", value = FALSE),
                            plotOutput("monthplot"),
-                           downloadButton("downloadPlot1", "Download the Plot"),
-                           plotOutput("monthtimeplot")),
+                           downloadButton("downloadmonthplot", "Download the Plot Above"),
+                           plotOutput("monthtimeplot"),
+                           downloadButton("downloadmonthtimeplot", "Download the Plot Above")),
                   
                   tabPanel("Plot: People", 
                            # Number of people to show
                            sliderInput("n", "Number of People to Show:",min=1, max=40, value=20),
-                           # h2(textOutput("plot1title")),
+                          
                            plotOutput("plot1"),
-                           # h2(textOutput("plot2title")),
-                           plotOutput("plot2")),
+                           downloadButton("downloadplot1", "Download the Plot Above"),
+                           
+                           plotOutput("plot2"),
+                           downloadButton("downloadplot2", "Download the Plot Above")),
+                  
                   tabPanel("Plot: Time", plotlyOutput("timeplot1"),
                            checkboxInput("showname", "Show Event Name", value = TRUE)),
                   tabPanel("Plot: Network", plotOutput("netplot1"),

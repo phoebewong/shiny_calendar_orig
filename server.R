@@ -158,7 +158,7 @@ shinyServer(function(input, output, session) {
   #   #validate(need(input$meet.df != "", ""))
   #   paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2])})
   
-  output$plot2 <- renderPlot({
+  plot2 <- reactive({
     #validate(need(input$meet.df != "", ""))
     meet.df <- display.df()
     n <- input$n
@@ -194,8 +194,22 @@ shinyServer(function(input, output, session) {
       theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
       scale_fill_fivethirtyeight()
   })
+  output$plot2 <- renderPlot({
+    return(plot2())
+  })
   
-  output$monthplot <- renderPlot({
+  output$downloadPlot2 <- downloadHandler(
+    filename = function() {
+      paste('plot', '.png', sep='')
+    },
+    content=function(file){
+      png(file)
+      print(plot2())
+      dev.off()
+    },
+    contentType='image/png')
+  
+  monthplot <- reactive({
     meet.df <- display.df()
     ## Number of meetings per month (plot) ####
     if(input$sortbyFreq == TRUE){ #sorting by Frequency
@@ -209,7 +223,7 @@ shinyServer(function(input, output, session) {
     colnames(month.df) <- c("Month", "Freq")
     rot = 45
     
-    g <- ggplot(month.df, aes(x=Month, y=Freq))+
+    ggplot(month.df, aes(x=Month, y=Freq))+
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
       labs(x = "Year-Month", title = "Number of Meetings per Month") +
@@ -218,10 +232,22 @@ shinyServer(function(input, output, session) {
       theme_fivethirtyeight() +
       theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
       scale_fill_fivethirtyeight()
-    return (g)
   })
+  output$monthplot <- renderPlot({
+    return(monthplot())
+  })
+  output$downloadmonthplot <- downloadHandler(
+    filename = function() {
+      paste('monthplot', '.png', sep='')
+    },
+    content=function(file){
+      png(file)
+      print(monthplot())
+      dev.off()
+    },
+    contentType='image/png')
   
-  output$monthtimeplot <- renderPlot({
+  monthtimeplot <- reactive({
     meet.df <- display.df()
     # Duration of meetings per month (plot) ####
     if(input$sortbyFreq == TRUE){
@@ -236,7 +262,7 @@ shinyServer(function(input, output, session) {
     }
     rot <- 45
     
-    g <- ggplot(time.month.df, aes(x=Month, y=Duration)) +
+    ggplot(time.month.df, aes(x=Month, y=Duration)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = round(Duration)), vjust = -0.5) +
       labs(x = "Year-Month", y = "Duration (Minutes)", title = "Average Duration (Minutes) Per Month") +
@@ -245,13 +271,22 @@ shinyServer(function(input, output, session) {
       theme_fivethirtyeight() +
       theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
       scale_fill_fivethirtyeight()
-    
-    return(g)
+  })
+  output$monthtimeplot <- renderPlot({
+    return(monthtimeplot())
   })
   
-  output$avgtimeplot <- renderPlot({
-    
-  })
+  output$downloadmonthtimeplot <- downloadHandler(
+    filename = function() {
+      paste('monthtimeplot', '.png', sep='')
+    },
+    content=function(file){
+      png(file)
+      print(monthtimeplot())
+      dev.off()
+    },
+    contentType='image/png')
+  
   output$timeplot1 <- renderPlotly({
     temp <- display.df()
     temp <- subset(temp, temp$wday >= 1 & temp$wday <= 5)
