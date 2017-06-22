@@ -21,6 +21,7 @@ library(networkD3)
 # .	Exclude meeting invites from specific person (from Quant Event?)
 # .	Exclude certain events?
 # .	Add "Download Plot" buttons [ggplot]
+# . Change plot 1 to refelct input$n
 
 
 shinyServer(function(input, output, session) {
@@ -106,9 +107,9 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, "n", value = 20, min = 1, max = n)
   })
   
-  output$plot1title <- renderText({
-    #validate(need(input$meet.df != "", "Please upload a data set"))
-    paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2])})
+  # output$plot1title <- renderText({
+  #   #validate(need(input$meet.df != "", "Please upload a data set"))
+  #   paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2])})
   
   plot1 <- reactive({
     meet_clean.df <- display.df()
@@ -130,8 +131,12 @@ shinyServer(function(input, output, session) {
     ggplot(data=people.freq.df, aes(x=Var1, y=Freq)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
-      xlab("Name")+
-      theme(axis.text.x = element_text(angle = rot, hjust = 1))
+      labs(title = paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2]),
+            x = "Name") +
+      
+      theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
+      scale_fill_fivethirtyeight() #doesn't 
   })
   output$plot1 <- renderPlot({
     #validate(need(input$meet.df != "", ""))
@@ -148,11 +153,10 @@ shinyServer(function(input, output, session) {
       dev.off()
     },
     contentType='image/png')
-  
 
-  output$plot2title <- renderText({
-    #validate(need(input$meet.df != "", ""))
-    paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2])})
+  # output$plot2title <- renderText({
+  #   #validate(need(input$meet.df != "", ""))
+  #   paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2])})
   
   output$plot2 <- renderPlot({
     #validate(need(input$meet.df != "", ""))
@@ -181,14 +185,14 @@ shinyServer(function(input, output, session) {
     #   people.freq.df$Name <- people.freq.df$Name
     # 
 
-    g <- ggplot(data=people.freq.df, aes(x=all.attendee, y=Freq)) +
+    ggplot(data=people.freq.df, aes(x=all.attendee, y=Freq)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
-      xlab("Name")+
-      theme(axis.text.x = element_text(angle = rot, hjust = 1)) #+
-    #theme_wsj() #+
-    # scale_colour_few(palette = "medium")
-    print(g)
+      labs(title = paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2]),
+           x = "Name") + 
+      theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
+      scale_fill_fivethirtyeight()
   })
   
   output$monthplot <- renderPlot({
@@ -211,7 +215,9 @@ shinyServer(function(input, output, session) {
       labs(x = "Year-Month", title = "Number of Meetings per Month") +
       geom_hline(yintercept=mean(month.df$Freq), col = "dark grey", linetype = "dashed")+
       geom_text(x=Inf, y=mean(month.df$Freq), label = round(mean(month.df$Freq)), hjust=1, vjust=-0.5)+
-      theme(axis.text.x = element_text(angle = rot, hjust = 1))
+      theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
+      scale_fill_fivethirtyeight()
     return (g)
   })
   
@@ -236,7 +242,9 @@ shinyServer(function(input, output, session) {
       labs(x = "Year-Month", y = "Duration (Minutes)", title = "Average Duration (Minutes) Per Month") +
       geom_hline(yintercept=mean(time.month.df$Duration), col = "dark grey", linetype = "dashed")+
       geom_text(x=Inf, y=mean(time.month.df$Duration), label = round(mean(time.month.df$Duration)), hjust=1, vjust=-0.5)+
-      theme(axis.text.x = element_text(angle = rot, hjust = 1))
+      theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
+      scale_fill_fivethirtyeight()
     
     return(g)
   })
