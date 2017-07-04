@@ -107,10 +107,6 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, "n", value = 20, min = 1, max = n)
   })
   
-  # output$plot1title <- renderText({
-  #   #validate(need(input$meet.df != "", "Please upload a data set"))
-  #   paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2])})
-  
   plot1 <- reactive({
     meet_clean.df <- display.df()
     n <- input$n
@@ -131,7 +127,7 @@ shinyServer(function(input, output, session) {
     ggplot(data=people.freq.df, aes(x=Var1, y=Freq)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +
-      labs(title = paste("Top", input$n, "people who initaited a meeting with me from", input$dates[1], "to", input$dates[2]),
+      labs(title = paste("Top", input$n, "people who initiated a meeting with me from", input$dates[1], "to", input$dates[2]),
             x = "Name") +
       
       theme_fivethirtyeight() +
@@ -145,7 +141,7 @@ shinyServer(function(input, output, session) {
   
   output$downloadPlot1 <- downloadHandler(
     filename = function() {
-      paste('plot', '.png', sep='')
+      paste('peopleplot', '.png', sep='')
     },
     content=function(file){
       png(file)
@@ -154,10 +150,6 @@ shinyServer(function(input, output, session) {
     },
     contentType='image/png')
 
-  # output$plot2title <- renderText({
-  #   #validate(need(input$meet.df != "", ""))
-  #   paste("Top", input$n, "people who attended a meeting with me from", input$dates[1], "to", input$dates[2])})
-  
   plot2 <- reactive({
     #validate(need(input$meet.df != "", ""))
     meet.df <- display.df()
@@ -200,7 +192,7 @@ shinyServer(function(input, output, session) {
   
   output$downloadPlot2 <- downloadHandler(
     filename = function() {
-      paste('plot', '.png', sep='')
+      paste('peopleplot2', '.png', sep='')
     },
     content=function(file){
       png(file)
@@ -397,30 +389,30 @@ shinyServer(function(input, output, session) {
   
   output$summary1 <- renderText({
     paste("From", input$dates[1], "to", input$dates[2],  ", I had", nrow(display.df()), "meetings")})
-  output$summary2 <- renderText({
-    meet.df <- display.df()
-    n <- input$n
-    split.func <- function(x){ return (unlist(strsplit(x, split = ";")))}
-    split2.func <- function(x){ return (strsplit(x, split = ";"))}
-    # To avoid NA as character
-    meeting.org <- as.character(na.omit(unlist(sapply(meet.df$Meeting.Organizer, split.func))))
-    required.attendee <- as.character(na.omit(unlist(sapply(meet.df$Required.Attendees, split.func))))
-    optional.attendee <- as.character(na.omit(unlist(sapply(meet.df$Optional.Attendees, split.func))))
-    
-    all.attendee <- c(meeting.org, required.attendee)
-    
-    people.freq.df <- as.data.frame(table(all.attendee)) %>%
-      top_n(n, Freq) %>% #show n rows, will show >n rows if there're ties
-      arrange(desc(Freq)) #%>% #show by descending order of Freq
-    #rename(Name=all.attendee2) -> people.freq.df
-    rot <- 45
-    # sort <- "Freq" #or by "Alphabet"
-    
-    # if (sort == "Freq"){
-    people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
-    people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
-    return(paste0("Most of them are with ", people.freq.df$all.attendee[2], "."))
-    })
+  # output$summary2 <- renderText({
+  #   meet.df <- display.df()
+  #   n <- input$n
+  #   split.func <- function(x){ return (unlist(strsplit(x, split = ";")))}
+  #   split2.func <- function(x){ return (strsplit(x, split = ";"))}
+  #   # To avoid NA as character
+  #   meeting.org <- as.character(na.omit(unlist(sapply(meet.df$Meeting.Organizer, split.func))))
+  #   required.attendee <- as.character(na.omit(unlist(sapply(meet.df$Required.Attendees, split.func))))
+  #   optional.attendee <- as.character(na.omit(unlist(sapply(meet.df$Optional.Attendees, split.func))))
+  #   
+  #   all.attendee <- c(meeting.org, required.attendee)
+  #   
+  #   people.freq.df <- as.data.frame(table(all.attendee)) %>%
+  #     top_n(n, Freq) %>% #show n rows, will show >n rows if there're ties
+  #     arrange(desc(Freq)) #%>% #show by descending order of Freq
+  # 
+  #   rot <- 45
+  #   # sort <- "Freq" #or by "Alphabet"
+  #   
+  #   # if (sort == "Freq"){
+  #   people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
+  #   people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
+  #   return(paste0("Most of them are with ", people.freq.df$all.attendee[2], "."))
+  #   })
   
   output$summary3 <- renderText({
     meet.df <- display.df()
@@ -443,7 +435,7 @@ shinyServer(function(input, output, session) {
     
     # if (sort == "Freq"){
     people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
-    return(paste0("To be exact, ", round(people.freq.df$Freq[2]/nrow(display.df())* 100), "% of my meetings are with ", people.freq.df$all.attendee[2]))
+    return(paste0(round(people.freq.df$Freq[2]/nrow(display.df())* 100), "% of my meetings are with ", people.freq.df$all.attendee[2]))
   })
   
   

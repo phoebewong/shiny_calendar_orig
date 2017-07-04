@@ -11,7 +11,6 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      textOutput("instruction"),
       # File input 
       fileInput('meet.df', 'Choose CSV File',
                 accept=c(#'text/csv', 
@@ -31,11 +30,13 @@ shinyUI(fluidPage(
     
     mainPanel(
       tabsetPanel(type = "tabs", 
+                  tabPanel("Introduction", 
+                           includeMarkdown("intro.md")),
                   tabPanel("Table", dataTableOutput("table"),
                                     verbatimTextOutput("date") ),
                   tabPanel("Summary", 
                            h1(textOutput("summary1")),
-                           h2(textOutput("summary2")),
+                           # h2(textOutput("summary2")),
                            h3(textOutput("summary3")),
                            checkboxInput("sortbyFreq", "Sort by Frequency", value = FALSE),
                            plotOutput("monthplot"),
