@@ -77,12 +77,51 @@ shinyServer(function(input, output, session) {
     x <- colnames(meet.df())
     # Can use character(0) to remove all choices
     if (is.null(x)) x <- character(0)
+    col_show <- c("Subject", "Start.Date","Start.Time", "End.Date", "End.Time", "All.day.event", "Meeting.Organizer", "Required.Attendees", "Optional.Attendees")
     updateSelectizeInput(session, inputId = "show_vars",
                          label = "Columns to show:",
                          choices = x,
-                         selected = x[c(1:6, 10:12, 14)])
+                         selected = x[x %in% col_show]
+                         )
   })
   
+  # My name
+  people.freq.df <- reactive({
+    meet.df <- display.df()
+    n <- input$n
+    split.func <- function(x){ return (unlist(strsplit(x, split = ";")))}
+    split2.func <- function(x){ return (strsplit(x, split = ";"))}
+    # To avoid NA as character
+    meeting.org <- as.character(na.omit(unlist(sapply(meet.df$Meeting.Organizer, split.func))))
+    required.attendee <- as.character(na.omit(unlist(sapply(meet.df$Required.Attendees, split.func))))
+    optional.attendee <- as.character(na.omit(unlist(sapply(meet.df$Optional.Attendees, split.func))))
+    
+    all.attendee <- c(meeting.org, required.attendee, optional.attendee)
+    
+    people.freq.df <- as.data.frame(table(all.attendee)) %>%
+      top_n(n, Freq) %>% #show n rows, will show >n rows if there're ties
+      arrange(desc(Freq)) #%>% #show by descending order of Freq
+    #rename(Name=all.attendee2) -> people.freq.df
+    rot <- 45
+    # sort <- "Freq" #or by "Alphabet"
+    
+    # if (sort == "Freq"){
+    people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
+    people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
+    return(people.freq.df)
+  })
+  # My name
+  observe({
+    df <- people.freq.df()
+    x <- df$all.attendee[1]
+    # Can use character(0) to remove all choices
+    # if (is.null(x)) x <- character(0)
+    updateSelectizeInput(session, inputId = "myname",
+                         label = "My name is",
+                         choices = df$all.attendee,
+                         selected = x
+    )
+  })
   # Date of data to show (reactive datarangeinput) ####
   output$dates <- renderUI({
     df <- meet.df()
@@ -120,6 +159,7 @@ shinyServer(function(input, output, session) {
     # if (sort == "Freq"){
     people.freq.df$Var1 <- factor(people.freq.df$Var1)
     people.freq.df$Var1 <- reorder(people.freq.df$Var1, -(people.freq.df$Freq))
+    people.freq.df    <- people.freq.df[people.freq.df$Var1 != input$myname,]
     # } else {
     #   people.freq.df$Var1 <- people.freq.df$Var1
     # }
@@ -173,10 +213,12 @@ shinyServer(function(input, output, session) {
     # if (sort == "Freq"){
       people.freq.df$all.attendee <- factor(people.freq.df$all.attendee)
       people.freq.df$all.attendee <- reorder(people.freq.df$all.attendee, -(people.freq.df$Freq))
+      people.freq.df <- people.freq.df[people.freq.df$all.attendee != input$myname, ]
     # } else {
     #   people.freq.df$Name <- people.freq.df$Name
     # 
-
+    # return(people.freq.df) #returning for "my name"
+      
     ggplot(data=people.freq.df, aes(x=all.attendee, y=Freq)) +
       geom_bar(stat = "identity") +
       geom_text(aes(label = Freq), vjust = -0.5) +

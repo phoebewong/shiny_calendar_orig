@@ -18,6 +18,9 @@ shinyUI(fluidPage(
                          '.csv','.CSV')),
       # Add a horizontal line
       tags$hr(), 
+      
+      selectInput('myname','My name is', choices = NULL, #placeholder for names
+                  multiple = FALSE, selectize = TRUE),
       # Columns to show
       selectInput('show_vars','Columns to show:', choices = NULL, #placeholder for columns
                   multiple = TRUE, selectize = TRUE),
@@ -35,9 +38,6 @@ shinyUI(fluidPage(
                   tabPanel("Table", dataTableOutput("table"),
                                     verbatimTextOutput("date") ),
                   tabPanel("Summary", 
-                           h1(textOutput("summary1")),
-                           # h2(textOutput("summary2")),
-                           h3(textOutput("summary3")),
                            checkboxInput("sortbyFreq", "Sort by Frequency", value = FALSE),
                            plotOutput("monthplot"),
                            downloadButton("downloadmonthplot", "Download the Plot Above"),
@@ -45,6 +45,9 @@ shinyUI(fluidPage(
                            downloadButton("downloadmonthtimeplot", "Download the Plot Above")),
                   
                   tabPanel("Plot: People", 
+                           h1(textOutput("summary1")),
+                           # h2(textOutput("summary2")),
+                           h3(textOutput("summary3")),
                            # Number of people to show
                            sliderInput("n", "Number of People to Show:",min=1, max=40, value=20),
                           
