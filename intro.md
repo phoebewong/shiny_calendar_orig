@@ -5,7 +5,7 @@ This Shiny app aims to visualize your Microsoft Outlook Calendar Data. The sampl
 * If you wish to visualize the data of your Microsoft Outlook Calendar, you will need to import a csv file of your Calendar.
 
 
-To download a csv file of your calendar history from Microsoft Outlook, follow [here](http://tinnes.co.uk/desktopcalendar/support/7/faq_importexport_exportoutlook2010.php) and sorry, the output is not available to Mac users at the moment.
+To download a csv file of your calendar history from Microsoft Outlook, follow [here](http://tinnes.co.uk/desktopcalendar/support/7/faq_importexport_exportoutlook2010.php) and sorry, the export functionality does not seem to support Mac users at the moment.
 After downloading the csv file, you can upload it to the app to visualize the output.
 
 ---
