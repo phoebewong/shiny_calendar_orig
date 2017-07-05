@@ -48,6 +48,7 @@ shinyUI(fluidPage(
                            h1(textOutput("summary1")),
                            # h2(textOutput("summary2")),
                            h3(textOutput("summary3")),
+                           tags$hr(),
                            # Number of people to show
                            sliderInput("n", "Number of People to Show:",min=1, max=40, value=20),
                           
