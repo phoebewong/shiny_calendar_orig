@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
     display.df$startyr   <- format(display.df$start, "%Y")
     display.df$startmon  <- format(display.df$start, "%m")
     display.df$startyrmon <- format(display.df$start, "%Y-%m")
-    
+    display.df$startdate <- format(display.df$start, "%d")
     return(display.df)
   })
   # Columns to show (reactive)
@@ -431,6 +431,46 @@ shinyServer(function(input, output, session) {
                  NodeID = 'name', Group = 'group', zoom = TRUE))
   })
   
+  dateplot <- reactive({
+    meet.df <- display.df()
+    ## Number of meetings per month (plot) ####
+    if(input$sortbyFreq == TRUE){ #sorting by Frequency
+      date.df <- as.data.frame(table(meet.df$startdate)) %>%
+        arrange(desc(Freq)) #sort by Frequency
+      date.df[,1] <- factor(date.df[,1])
+      date.df[,1] <- reorder(date.df[,1], -(date.df[,2]))
+    }
+    else{date.df <- as.data.frame(table(meet.df$startdate))}
+    
+    colnames(date.df) <- c("Date", "Freq")
+    rot = 0
+    
+    ggplot(date.df, aes(x=Date, y=Freq))+
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = Freq), vjust = -0.5) +
+      labs(x = "Date", title = "Number of Meetings per Date") +
+      geom_hline(yintercept=mean(date.df$Freq), col = "dark grey", linetype = "dashed")+
+      geom_text(x=Inf, y=mean(date.df$Freq), label = round(mean(date.df$Freq)), hjust=1, vjust=-0.5)+
+      theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = rot, hjust = 1)) +
+      scale_fill_fivethirtyeight()
+  })
+  output$dateplot <- renderPlot({
+    return(dateplot())
+  })
+  output$downloaddateplot <- downloadHandler(
+    filename = function() {
+      paste('dateplot', '.png', sep='')
+    },
+    content=function(file){
+      png(file)
+      print(monthplot())
+      dev.off()
+    },
+    contentType='image/png')
+  output$summarydateplot <- renderText({
+    "While some dates are by design less likely to have meetings, because they are less likely to exist or to be business days (e.g., 31st or 4th for the U.S. holidays), 
+    it could still be interesting to see the differences."})
   output$summary1 <- renderText({
     paste("From", input$dates[1], "to", input$dates[2],  ", I had", nrow(display.df()), "meetings in total of", sum(display.df()$duration) ,"hours.")})
   # bizdaycount <- reactive({
