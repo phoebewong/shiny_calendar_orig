@@ -3,8 +3,9 @@ title:
 account: phoebewong
 server: shinyapps.io
 appId: 164339
-bundleId: 774433
+bundleId: 892640
 url: https://phoebewong.shinyapps.io/calendar_shinyio/
-when: 1491195117.4905
+when: 1499262602.31693
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: contact.html

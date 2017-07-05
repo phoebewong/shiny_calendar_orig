@@ -13,8 +13,7 @@ After downloading the csv file, you can upload it to the app to visualize the ou
 ## Summary
 ### Left Side Bar:
 1. **CSV Upload**: you can upload your Outlook data here, by following the link above or [here](http://tinnes.co.uk/desktopcalendar/support/7/faq_importexport_exportoutlook2010.php) 
-2. **My name**: the default name chosen comes from your data, if it is not your name, you can change it by selecting the right name on the dropdown menu. 
-* It is important to have the right name for plots under the "People" tab
+2. **My name**: the default name chosen comes from your data, if it is not your name, you can change it by selecting the right name on the dropdown menu. It is important to have the right name for plots under the "People" tab
 3. **Columns to show**: columns to show on the "Table" tab
 4. **Date input**: pick the range of dates that you are interested in analzying
 5. **Exclude All Day Events**: checked by defult, and it is helpful especially for those of you who also uses the calendar as a project management tool by creating "All Day Events"

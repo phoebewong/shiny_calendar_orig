@@ -3,7 +3,7 @@ library(shiny)
 library(plotly)
 library(shinythemes)
 library(networkD3)
-
+library(markdown)
 shinyUI(fluidPage(
   theme = shinytheme("sandstone"),
   

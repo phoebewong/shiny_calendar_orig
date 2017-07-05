@@ -8,6 +8,7 @@ library(data.table)
 library(plotly)
 library(igraph)
 library(networkD3)
+library(markdown)
 # To do:
 # 1. Remove "Canceled:"
 # 2. Provide a text entry box to remove certain events
