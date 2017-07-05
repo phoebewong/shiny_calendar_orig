@@ -68,7 +68,7 @@ shinyUI(fluidPage(
                            sliderInput("net_width", "Link Width:",min=1, max=100, value=20),
                            sliderInput("node_size", "Node Size:",min=1, max=100, value=50),
                            forceNetworkOutput("netplot2", width = "100%", height = "500px")),
-                  tabPanel("Fun Fact", 
+                  tabPanel("Fun Facts", 
                            h4(textOutput("summarydateplot")),
                            plotOutput("dateplot"),
                            downloadButton("downloaddateplot", "Download the Plot Above")),
