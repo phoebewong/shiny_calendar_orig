@@ -9,6 +9,7 @@ library(plotly)
 library(igraph)
 library(networkD3)
 library(markdown)
+library(bizdays)
 # To do:
 # 1. Remove "Canceled:"
 # 2. Provide a text entry box to remove certain events
@@ -431,7 +432,36 @@ shinyServer(function(input, output, session) {
   })
   
   output$summary1 <- renderText({
-    paste("From", input$dates[1], "to", input$dates[2],  ", I had", nrow(display.df()), "meetings")})
+    paste("From", input$dates[1], "to", input$dates[2],  ", I had", nrow(display.df()), "meetings in total of", sum(display.df()$duration) ,"hours.")})
+  # bizdaycount <- reactive({
+  #   if(is.null(input$bizdaycount)){
+  #     bizdaycount <- bizdays(input$dates[1], input$dates[2], cal = cal) + 1  
+  #   } else{
+  #     bizdaycount <- numericInput(inputId, label, value,
+  #                                     min, max, step)
+  #   }
+  #   return(bizdaycount)
+  # })
+
+  # observe({
+  #   cal <- create.calendar("Actual", weekdays=c("saturday", "sunday"))
+  #   # x <- bizdays(as.Date(input$dates[1], format = "%Y-%m-%d"), as.Date(input$dates[2], format = "%Y-%m-%d"), cal = cal) + 1
+  #   # Can use character(0) to remove all choices
+  #   # if (is.null(x)) x <- numeric(0)
+  #   updateNumericInput(session, inputId = "bizdaycount",
+  #                        label = "Work Hours per Day:",
+  #                         value = bizdays(as.Date(input$dates[1], format = "%Y-%m-%d"), as.Date(input$dates[2], format = "%Y-%m-%d"), cal = cal) + 1,
+  #                         min = 1,
+  #                         max = as.numeric(as.Date(input$dates[2], format = "%Y-%m-%d") - as.Date(input$dates[1], format = "%Y-%m-%d")),
+  #                        step=1
+  #   )
+  # })
+  output$summary2 <- renderText({
+    cal <- create.calendar("Actual", weekdays=c("saturday", "sunday"))
+    bizdaycount <- bizdays(as.Date(input$dates[1], format = "%Y-%m-%d"), as.Date(input$dates[2], format = "%Y-%m-%d"), cal = cal) + 1
+    workhours <- input$workhours
+    paste0("Out of ", bizdaycount  ," business days (roughly estimated), on average, ", round(sum(display.df()$duration)/(bizdaycount*workhours)),"% of my work time was spent on meetings." )
+  })
   # output$summary2 <- renderText({
   #   meet.df <- display.df()
   #   n <- input$n
