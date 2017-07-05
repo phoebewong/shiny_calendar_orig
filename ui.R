@@ -61,16 +61,10 @@ shinyUI(fluidPage(
                            sliderInput("net_n", "Number of People in the Network:",min=1, max=40, value=5),
                            sliderInput("net_width", "Link Width:",min=1, max=100, value=20),
                            sliderInput("node_size", "Node Size:",min=1, max=100, value=50),
-                           forceNetworkOutput("netplot2", width = "100%", height = "500px")) #
-                  
+                           forceNetworkOutput("netplot2", width = "100%", height = "500px")),
+                  tabPanel("Contact", 
+                           includeMarkdown("contact.md"))
                   )
-                  
-      # h3("Statistics"),
-      # textOutput("scene"),
-      # plotOutput("plot1")#,
-      # h3("Predicted Horsepower from Model 2:"),
-      # textOutput("pred2"),
-      # textOutput("name")
     )  
   )
 ))
