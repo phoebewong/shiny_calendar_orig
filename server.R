@@ -468,6 +468,9 @@ shinyServer(function(input, output, session) {
       dev.off()
     },
     contentType='image/png')
+  output$introdateplot <- renderText({
+    "Do you think if you had more meetings on a particular date?"
+  })
   output$summarydateplot <- renderText({
     "While some dates are by design less likely to have meetings, because they are less likely to exist or to be business days (e.g., 31st or 4th for the U.S. holidays), 
     it could still be interesting to see the differences."})
